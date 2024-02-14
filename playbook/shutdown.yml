@@ -14,5 +14,5 @@
   gather_facts: true
   serial: 1
   tasks:
-    - name: Reboot
-      ansible.builtin.reboot:
+    - name: Shutdown
+      community.general.shutdown:

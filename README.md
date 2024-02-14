@@ -144,6 +144,10 @@ See these other projects:
 
   ```ansible-playbook -i inventory/inventory.yml playbook/reboot.yml --ask-become-pass```
 
+- Shutdown all nodes:
+
+```ansible-playbook -i inventory/inventory.yml playbook/shutdown.yml --ask-become-pass```
+
 - Install cluster from scratch:
 
   ```ansible-playbook -b playbook/site.yml -i inventory/inventory.yml --ask-become-pass```
