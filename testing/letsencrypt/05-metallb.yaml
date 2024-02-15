@@ -1,0 +1,56 @@
+Name:                   metallb-controller
+Namespace:              metallb-system
+CreationTimestamp:      Thu, 15 Feb 2024 01:20:51 +0100
+Labels:                 app.kubernetes.io/component=controller
+                        app.kubernetes.io/instance=metallb
+                        app.kubernetes.io/managed-by=Helm
+                        app.kubernetes.io/name=metallb
+                        app.kubernetes.io/version=v0.14.3
+                        helm.sh/chart=metallb-0.14.3
+Annotations:            deployment.kubernetes.io/revision: 1
+                        meta.helm.sh/release-name: metallb
+                        meta.helm.sh/release-namespace: metallb-system
+Selector:               app.kubernetes.io/component=controller,app.kubernetes.io/instance=metallb,app.kubernetes.io/name=metallb
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:           app.kubernetes.io/component=controller
+                    app.kubernetes.io/instance=metallb
+                    app.kubernetes.io/name=metallb
+  Service Account:  metallb-controller
+  Containers:
+   controller:
+    Image:       quay.io/metallb/controller:v0.14.3
+    Ports:       7472/TCP, 9443/TCP
+    Host Ports:  0/TCP, 0/TCP
+    Args:
+      --port=7472
+      --log-level=info
+      --cert-service-name=metallb-webhook-service
+      --tls-min-version=VersionTLS12
+    Liveness:   http-get http://:monitoring/metrics delay=10s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:monitoring/metrics delay=10s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      METALLB_ML_SECRET_NAME:  metallb-memberlist
+      METALLB_DEPLOYMENT:      metallb-controller
+      METALLB_BGP_TYPE:        frr
+    Mounts:
+      /tmp/k8s-webhook-server/serving-certs from cert (ro)
+  Volumes:
+   cert:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  webhook-server-cert
+    Optional:    false
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   metallb-controller-86dcf9f78c (1/1 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  7m28s  deployment-controller  Scaled up replica set metallb-controller-86dcf9f78c to 1
